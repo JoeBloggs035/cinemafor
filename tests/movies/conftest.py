@@ -31,9 +31,30 @@ def get_film_posters():
     min_price = 1  # faker.random_int(min=1, max=2147483647)
     max_price = faker.random_int(min=min_price, max=2147483647)
     locations = faker.random.choice(["MSK", "SPB", "MSK,SPB"])
-    published = faker.random.choice(["true", "false", "--"])
+    published = faker.random.choice(["true", "false", "--"]) # вообще пофиг что писать
     genre_id = faker.random_int(min=1, max=10)
     created_at = faker.random.choice(["asc", "desc"])
+    get_params = f"?pageSize={page_size}&page={page}&minPrice={min_price}&maxPrice={max_price}&locations={locations}&published={published}&genreId={genre_id}&createdAt={created_at}"
+    return get_params
+
+@pytest.fixture
+def get_film_posters_negative():
+    page = 0
+    page =  922337203685477568 # меньше чем 1 и больше чем 922337203685477567 - неверные параметры
+    page = 1.5
+    page = "qwerty"
+    page = None
+    page = [2, 1, 4, 7, 4, 8, 3, 6, 4, 8]
+    min_price = -1  # faker.random_int(min=1, max=2147483647) # если < 0 или min_price > max_price
+    min_price = (faker.random_int(min=min_price, max=2147483646))
+    max_price = (min_price - 1) #faker.random_int(min=min_price, max=2147483647)# если max_price > 2147483647
+    max_price = 2147483648
+    locations = 1 # если locations не MSK SPB MSK,SPB
+    locations = 1.5
+    locations = "1"
+    # published = faker.random.choice(["true", "false", 1, 0]) # вообще пофиг что писать
+    genre_id =  faker.random_int(min=1, max=10) # меньше 0 и больше 2147483647, str, float, массивы
+    created_at = faker.random.choice(["asc", "desc"]) # всё кроме asc и desc
     get_params = f"?pageSize={page_size}&page={page}&minPrice={min_price}&maxPrice={max_price}&locations={locations}&published={published}&genreId={genre_id}&createdAt={created_at}"
     return get_params
 
@@ -50,20 +71,3 @@ def put_booking_data():
     }
 
 
-@pytest.fixture
-def patch_booking_data():
-    return {"firstname": faker.first_name(), "additionalneeds": faker.word()}
-
-
-@pytest.fixture
-def bad_booking_data():
-    return {
-        "firstname": faker.random_int(
-            min=100, max=100000
-        ),  # неверный формат данных имени
-        "lastname": faker.last_name(),
-        "totalprice": faker.first_name(),
-        "depositpaid": True,
-        "bookingdates": {"checkin": "2024-04-07", "checkout": "2024-04-09"},
-        "additionalneeds": faker.word(),
-    }
