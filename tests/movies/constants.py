@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-BASE_URL = "https://api.dev-cinescope.coconutqa.ru/"
+BASE_URL = "https://api.dev-cinescope.coconutqa.ru"
 HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
 
 # Определяем невалидные значения для разных типов параметров

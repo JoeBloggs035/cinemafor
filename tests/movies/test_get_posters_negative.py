@@ -1,4 +1,4 @@
-# test_movies_negative.py
+# test_get_posters_negative.py
 from typing import List, Tuple
 
 import pytest

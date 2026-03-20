@@ -11,18 +11,37 @@ def auth_session():
     session = requests.Session()
     session.headers.update(HEADERS)
 
+    # Авторизация
     response = requests.post(
-        f"{BASE_URL}/auth",
+        f"https://auth.dev-cinescope.coconutqa.ru/login",
         headers=HEADERS,
-        json={"username": "api1@gmail.com", "password": "asdqwe123Q"},
+        json={"email": "api1@gmail.com", "password": "asdqwe123Q"},
     )
     assert response.status_code == 200, "Ошибка авторизации"
-    token = response.json().get("token")
+    token = response.json().get("accessToken")
+    print(f"token: {token}")
     assert token is not None, "В ответе не оказалось токена"
 
-    session.headers.update({"Cookie": f"token={token}"})
+    # Пробуем разные способы передачи токена
+    # Способ 1: Authorization header (чаще всего используется)
+    session.headers.update({"Authorization": f"Bearer {token}"})
+
+    # Или Способ 2: если нужно в cookies
+    # session.cookies.set("token", token)
+
     return session
 
+@pytest.fixture
+def film_data():
+    return {
+        "name": f"{faker.color_name().title()} {faker.word().title()}",
+        "imageUrl": faker.image_url(),
+        "price": faker.random_int(min=1, max=2147483647),
+        "description": "В фильме постоянно происходят какие-то битвы",
+        "location": faker.random.choice(["MSK", "SPB", "MSK,SPB"]),
+        "published": True,
+        "genreId": faker.random_int(min=1, max=10)
+    }
 
 @pytest.fixture
 def get_film_posters():
