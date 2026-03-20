@@ -103,15 +103,3 @@ def get_film_posters_negative():
     created_at = faker.random.choice(["asc", "desc"])  # всё кроме asc и desc
     get_params = f"?pageSize={page_size}&page={page}&minPrice={min_price}&maxPrice={max_price}&locations={locations}&published={published}&genreId={genre_id}&createdAt={created_at}"
     return get_params
-
-
-@pytest.fixture
-def put_booking_data():
-    return {
-        "firstname": faker.first_name(),
-        "lastname": faker.last_name(),
-        "totalprice": faker.random_int(min=100, max=100000),
-        "depositpaid": True,
-        "bookingdates": {"checkin": "2024-04-07", "checkout": "2024-04-09"},
-        "additionalneeds": faker.word(),
-    }

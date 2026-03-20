@@ -52,17 +52,6 @@ INVALID_NUMERIC_VALUES = [
     "ё",  # кириллица
 ]
 
-# Невалидные значения для int64 параметров (если такие есть)
-#INVALID_INT64_VALUES = INVALID_NUMERIC_VALUES
-
-#INVALID_INT64_VALUES[1] = "922337203685477568"  # больше int64
-
-#INVALID_PAGESIZE_VALUES = INVALID_NUMERIC_VALUES + [
-#    "2147483648-1",  # составное значение
-#    "M12",  # буква+цифра
-#    "ё",  # кириллица
-#]
-
 # Словарь с параметрами и их невалидными значениями
 INVALID_PARAMETERS: Dict[str, List[str]] = {
     "pageSize": INVALID_NUMERIC_VALUES,
