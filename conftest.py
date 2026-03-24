@@ -1,13 +1,13 @@
-
 from faker import Faker
 import pytest
 import random
 import requests
-from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, HEADERS
+from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, HEADERS, MOVIES_BASE_URL
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
 
 faker = Faker()
+
 
 @pytest.fixture(scope="function")
 def film_data():
@@ -16,12 +16,13 @@ def film_data():
         "imageUrl": faker.image_url(),
         "price": faker.random_int(1, 2147483647),
         "description": faker.english_sentence(nb_words=15, variable_nb_words=False)
-                      if hasattr(faker, 'english_sentence')
-                      else faker.sentence(nb_words=15),
+        if hasattr(faker, 'english_sentence')
+        else faker.sentence(nb_words=15),
         "location": random.choice(["MSK", "SPB"]),
         "published": random.choice([True, False]),
         "genreId": faker.random_int(min=1, max=10)
     }
+
 
 @pytest.fixture(scope="function")
 def test_user():
@@ -40,6 +41,7 @@ def test_user():
         "roles": ["USER"]
     }
 
+
 @pytest.fixture(scope="function")
 def registered_user(requester, test_user):
     """
@@ -56,16 +58,60 @@ def registered_user(requester, test_user):
     registered_user["id"] = response_data["id"]
     return registered_user
 
+
 @pytest.fixture(scope="session")
 def requester():
     """
-    Фикстура для создания экземпляра CustomRequester.
+    Фикстура для создания экземпляра CustomRequester для auth сервиса.
     """
     session = requests.Session()
     return CustomRequester(session=session, base_url=BASE_URL)
 
+
+@pytest.fixture(scope="session")
+def auth_requester():
+    """
+    Фикстура для создания авторизованного CustomRequester для movies сервиса.
+    Получает токен и добавляет его в заголовки.
+    """
+    # Создаем сессию с заголовками
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
+    # Получаем токен через отдельный запрос к auth сервису
+    auth_url = f"{BASE_URL.rstrip('/')}{LOGIN_ENDPOINT}"
+    response = session.post(
+        auth_url,
+        headers=HEADERS,
+        json={"email": "api1@gmail.com", "password": "asdqwe123Q"}
+    )
+
+    if response.status_code != 200:
+        raise Exception(f"Ошибка авторизации: {response.status_code} - {response.text}")
+
+    token = response.json().get("accessToken")
+    if not token:
+        raise Exception("Токен не получен в ответе")
+
+    # Создаем новый CustomRequester для movies сервиса
+    movies_session = requests.Session()
+    # Добавляем базовые заголовки
+    movies_session.headers.update(HEADERS)
+    # Добавляем токен авторизации
+    movies_session.headers.update({"Authorization": f"Bearer {token}"})
+
+    # Создаем CustomRequester с правильным base_url
+    movies_requester = CustomRequester(session=movies_session, base_url=MOVIES_BASE_URL)
+
+    return movies_requester
+
+
+# Опционально: фикстура для обратной совместимости
 @pytest.fixture(scope="session")
 def auth_session():
+    """
+    Старая фикстура для обратной совместимости.
+    """
     session = requests.Session()
     session.headers.update(HEADERS)
 
@@ -80,5 +126,3 @@ def auth_session():
 
     session.headers.update({"Authorization": f"Bearer {token}"})
     return session
-
-
