@@ -1,12 +1,27 @@
 
 from faker import Faker
 import pytest
+import random
 import requests
-from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT
+from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, HEADERS
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
 
 faker = Faker()
+
+@pytest.fixture(scope="function")
+def film_data():
+    return {
+        "name": f"{faker.word().title()} {faker.word().title()}",
+        "imageUrl": faker.image_url(),
+        "price": faker.random_int(1, 2147483647),
+        "description": faker.english_sentence(nb_words=15, variable_nb_words=False)
+                      if hasattr(faker, 'english_sentence')
+                      else faker.sentence(nb_words=15),
+        "location": random.choice(["MSK", "SPB"]),
+        "published": random.choice([True, False]),
+        "genreId": faker.random_int(min=1, max=10)
+    }
 
 @pytest.fixture(scope="function")
 def test_user():
@@ -48,4 +63,22 @@ def requester():
     """
     session = requests.Session()
     return CustomRequester(session=session, base_url=BASE_URL)
+
+@pytest.fixture(scope="session")
+def auth_session():
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
+    response = requests.post(
+        f"https://auth.dev-cinescope.coconutqa.ru/login",
+        headers=HEADERS,
+        json={"email": "api1@gmail.com", "password": "asdqwe123Q"}
+    )
+    assert response.status_code == 200, "Ошибка авторизации"
+    token = response.json().get("accessToken")
+    assert token is not None, "В ответе не оказалось токена"
+
+    session.headers.update({"Authorization": f"Bearer {token}"})
+    return session
+
 
