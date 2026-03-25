@@ -1,6 +1,6 @@
 
 import pytest
-from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT
+from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT, AUTH_BASE_URL
 
 
 class TestAuthAPI:
@@ -10,6 +10,7 @@ class TestAuthAPI:
         """
         response = requester.send_request(
             method="POST",
+            base_url=AUTH_BASE_URL,
             endpoint=REGISTER_ENDPOINT,
             data=test_user,
             expected_status=201
@@ -30,6 +31,7 @@ class TestAuthAPI:
         }
         response = requester.send_request(
             method="POST",
+            base_url=AUTH_BASE_URL,
             endpoint=LOGIN_ENDPOINT,
             data=login_data,
             expected_status=200

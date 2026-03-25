@@ -1,6 +1,4 @@
-
 import json
-import requests
 import logging
 import os
 
@@ -13,15 +11,14 @@ class CustomRequester:
         "Accept": "application/json"
     }
 
-    def __init__(self, session, base_url):
+    def __init__(self, session):
         self.session = session
-        self.base_url = base_url
         self.headers = self.base_headers.copy()
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    def send_request(self, method, endpoint, data=None, expected_status=200, need_logging=True):
-        url = f"{self.base_url}{endpoint}"
+    def send_request(self, method, base_url, endpoint, data=None, expected_status=200, need_logging=True):
+        url = f"{base_url}{endpoint}"
         response = self.session.request(method, url, json=data)
         if need_logging:
             self.log_request_and_response(response)

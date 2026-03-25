@@ -8,6 +8,14 @@ faker = Faker()
 class DataGenerator:
 
     @staticmethod
+    def generate_valid_film_title():
+        return f"{faker.word().title()} {faker.word().title()}"
+
+    @staticmethod
+    def generate_valid_film_description():
+        return faker.sentence(nb_words=10)
+
+    @staticmethod
     def generate_random_email():
         random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
         random_char = faker.random_letter()
