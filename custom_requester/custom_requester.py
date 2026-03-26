@@ -15,16 +15,28 @@ class CustomRequester:
         self.session = session
         self.headers = self.base_headers.copy()
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
+        #self.logger.setLevel(logging.INFO)
 
     def send_request(self, method, base_url, endpoint, data=None, expected_status=200, need_logging=True):
         url = f"{base_url}{endpoint}"
-        response = self.session.request(method, url, json=data)
+        response = self.session.request(method, url, json=data, headers=self.headers)
         if need_logging:
             self.log_request_and_response(response)
         if response.status_code != expected_status:
             raise ValueError(f"Unexpected status code: {response.status_code}. Expected: {expected_status}")
         return response
+
+
+    def _update_session_headers(self, session, **kwargs):
+        """
+        Обновление заголовков сессии.
+        :param session: Объект requests.Session, предоставленный API-классом.
+        :param kwargs: Дополнительные заголовки.
+        """
+        #self.session = session
+        self.headers.update(kwargs)  # Обновляем базовые заголовки
+        session.headers.update(self.headers)  # Обновляем заголовки в текущей сессии
+
 
     def log_request_and_response(self, response):
         try:
