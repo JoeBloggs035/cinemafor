@@ -6,7 +6,12 @@ class TestUser:
         assert response.get('id') and response['id'] != '', "ID должен быть не пустым"
         assert response.get('email') == creation_user_data['email']
         assert response.get('fullName') == creation_user_data['fullName']
-        assert response.get('roles', []) == creation_user_data['roles']
+        # Приводим roles к списку для сравнения
+        expected_roles = creation_user_data['roles']
+        if isinstance(expected_roles, str):
+            expected_roles = [expected_roles]
+
+        assert response.get('roles') == expected_roles
         assert response.get('verified') is True
 
     def test_get_user_by_locator(self, super_admin, creation_user_data):
@@ -18,7 +23,12 @@ class TestUser:
         assert response_by_id.get('id') and response_by_id['id'] != '', "ID должен быть не пустым"
         assert response_by_id.get('email') == creation_user_data['email']
         assert response_by_id.get('fullName') == creation_user_data['fullName']
-        assert response_by_id.get('roles', []) == creation_user_data['roles']
+        # Приводим roles к списку для сравнения
+        expected_roles = creation_user_data['roles']
+        if isinstance(expected_roles, str):
+            expected_roles = [expected_roles]
+
+        assert response_by_id.get('roles') == expected_roles
         assert response_by_id.get('verified') is True
 
     def test_get_user_by_id_common_user(self, common_user):
