@@ -13,3 +13,4 @@ urllib3==2.6.3
 
 pydantic
 gradio
+sqlalchemy

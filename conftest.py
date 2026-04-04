@@ -1,15 +1,21 @@
+import datetime
+
 from faker import Faker
 import pytest
 import random
 import requests
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from api.api_manager import ApiManager
 from constants import AUTH_BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, HEADERS
 from custom_requester.custom_requester import CustomRequester
+from db_requester.models import UserDBModel
 from entities.user import User
 from enums.roles import Roles
 from models.base_models import TestUser
 from resources.user_creds import SuperAdminCreds
+from resources.user_creds import DbCreds
 from utils.data_generator import DataGenerator
 
 faker = Faker()
@@ -190,3 +196,38 @@ def common_user(user_session, super_admin, creation_user_data):
     super_admin.api.user_api.create_user(creation_user_data)
     common_user.api.auth_api.authenticate(common_user.creds)
     return common_user
+
+
+engine = create_engine(f"postgresql+psycopg2://{DbCreds.USERNAME}:{DbCreds.PASSWORD}@{DbCreds.HOST}:{DbCreds.PORT}/{DbCreds.DATABASE_NAME}") # Создаем движок (engine) для подключения к базе данных
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) # Создаем фабрику сессий
+
+@pytest.fixture(scope="module")
+def db_session():
+    """
+    Фикстура с областью видимости module.
+    Тестовые данные создаются один раз для всех тестов в модуле.
+    """
+    session = SessionLocal()
+
+    # Создаем тестовые данные
+    test_user = UserDBModel(
+        id = "test_id",
+        email = DataGenerator.generate_random_email(),
+        full_name = DataGenerator.generate_random_name(),
+        password = DataGenerator.generate_random_password(),
+        created_at = datetime.datetime.now(),
+        updated_at = datetime.datetime.now(),
+        verified = False,
+        banned = False,
+        roles = "{USER}"
+    )
+    session.add(test_user) #добавляем объект в базу данных
+    session.commit() #сохраняем изменения для всех остальных подключений
+
+    yield session # можете запустить тесты в дебаг режиме и поставить тут брекпойнт
+                  # зайдите в базу и убедитесь что новый объект был создан
+
+		#код ниже выполнится после всех запущенных тестов
+    #session.delete(test_user) # Удаляем тестовые данные
+    session.commit() # сохраняем изменения для всех остальных подключений
+    session.close() #завершем сессию (отключаемся от базы данных)
