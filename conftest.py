@@ -17,6 +17,7 @@ from models.base_models import TestUser
 from resources.user_creds import SuperAdminCreds
 from resources.user_creds import DbCreds
 from utils.data_generator import DataGenerator
+from urllib.parse import quote_plus
 
 faker = Faker()
 
@@ -205,10 +206,13 @@ def common_user(user_session, super_admin, creation_user_data):
     common_user.api.auth_api.authenticate(common_user.creds)
     return common_user
 
-
+encoded_password = quote_plus(DbCreds.PASSWORD)  # Jopa2019! -> Jopa2019%21
 engine = create_engine(
+    f"postgresql+psycopg2://{DbCreds.USERNAME}:{encoded_password}@{DbCreds.HOST}:{DbCreds.PORT}/{DbCreds.DATABASE_NAME}"
+)
+"""engine = create_engine(
     f"postgresql+psycopg2://{DbCreds.USERNAME}:{DbCreds.PASSWORD}@{DbCreds.HOST}:{DbCreds.PORT}/{DbCreds.DATABASE_NAME}"
-)  # Создаем движок (engine) для подключения к базе данных
+)"""  # Создаем движок (engine) для подключения к базе данных
 SessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine
 )  # Создаем фабрику сессий
@@ -241,6 +245,6 @@ def db_session():
     # зайдите в базу и убедитесь что новый объект был создан
 
     # код ниже выполнится после всех запущенных тестов
-    # session.delete(test_user) # Удаляем тестовые данные
+    session.delete(test_user) # Удаляем тестовые данные
     session.commit()  # сохраняем изменения для всех остальных подключений
-    session.close()  # завершем сессию (отключаемся от базы данных)
+    session.close()  # завершаем сессию (отключаемся от базы данных)

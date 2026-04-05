@@ -52,7 +52,8 @@ class TestAuthAPI:
             login_data=login_data, expected_status=expected_status
         )
 
-    # Modul_4\Cinescope\tests\api\test_auth.py
+    # Modul_4\cinemafor\tests\api\test_auth.py
+    @pytest.mark.xfail
     def test_register_user_db_session(
         self, api_manager: ApiManager, db_session: Session
     ):

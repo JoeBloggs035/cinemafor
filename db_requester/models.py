@@ -27,5 +27,5 @@ class UserDBModel(Base):
 class AccountTransactionTemplate(Base):
     __tablename__ = "accounts_transaction_template"
     __table_args__ = {"schema": "public"}
-    user = Column(String, primary_key=True)
+    username = Column(String, primary_key=True)
     balance = Column(Integer, nullable=False)

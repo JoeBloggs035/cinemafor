@@ -6,15 +6,15 @@ from db_requester.models import AccountTransactionTemplate
 from utils.data_generator import DataGenerator
 
 
-def test_accounts_transaction_template(self, db_session: Session):
+def test_accounts_transaction_template(db_session: Session):
     # ====================================================================== Подготовка к тесту
-    # Создаем новые записи в базе данных (чтоб точно быть уверенными что в базе присутствуют данные для тестирования)
+    # создаем новые записи в базе данных (чтоб точно быть уверенными, что в базе присутствуют данные для тестирования)
 
     stan = AccountTransactionTemplate(
-        user=f"Stan_{DataGenerator.generate_random_int(10)}", balance=1000
+        username=f"Stan_{DataGenerator.generate_random_int(10)}", balance=1000
     )
     bob = AccountTransactionTemplate(
-        user=f"Bob_{DataGenerator.generate_random_int(10)}", balance=500
+        username=f"Bob_{DataGenerator.generate_random_int(10)}", balance=500
     )
 
     # Добавляем записи в сессию
@@ -25,7 +25,7 @@ def test_accounts_transaction_template(self, db_session: Session):
     def transfer_money(session, from_account, to_account, amount):
         # пример функции выполняющей транзакцию
         # представим что она написана на стороне тестируемого сервиса
-        # и вызывая метод transfer_money, мы какбудтобы делем запрос в api_manager.movies_api.transfer_money
+        # и вызывая метод transfer_money, мы как будто бы делаем запрос в api_manager.movies_api.transfer_money
         """
         Переводит деньги с одного счета на другой.
         :param session: Сессия SQLAlchemy.
@@ -35,10 +35,10 @@ def test_accounts_transaction_template(self, db_session: Session):
         """
         # Получаем счета
         from_account = (
-            session.query(AccountTransactionTemplate).filter_by(user=from_account).one()
+            session.query(AccountTransactionTemplate).filter_by(username=from_account).one()
         )
         to_account = (
-            session.query(AccountTransactionTemplate).filter_by(user=to_account).one()
+            session.query(AccountTransactionTemplate).filter_by(username=to_account).one()
         )
 
         # Проверяем, что на счете достаточно средств
@@ -60,7 +60,7 @@ def test_accounts_transaction_template(self, db_session: Session):
     try:
         # Выполняем перевод 200 единиц от stan к bob
         transfer_money(
-            db_session, from_account=stan.user, to_account=bob.user, amount=200
+            db_session, from_account=stan.username, to_account=bob.username, amount=200
         )
 
         # Проверяем, что балансы изменились

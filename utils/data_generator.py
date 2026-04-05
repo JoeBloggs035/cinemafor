@@ -51,3 +51,15 @@ class DataGenerator:
         random.shuffle(password)
 
         return "".join(password)
+
+    @staticmethod
+    def generate_random_int(length: int = 10) -> int:
+        """
+        Генерирует случайное целое число с заданным количеством цифр.
+        :param length: количество цифр в числе
+        :return: случайное целое число
+        """
+        import random
+        min_value = 10 ** (length - 1)
+        max_value = (10 ** length) - 1
+        return random.randint(min_value, max_value)
