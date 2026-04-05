@@ -1,5 +1,15 @@
-#Modul_4\Cinescope\db_requester\sql_alchemy_client_simple_example.py
-from sqlalchemy import create_engine, Column, String, Boolean, DateTime, text, Integer, Float, DECIMAL
+# Modul_4\Cinescope\db_requester\sql_alchemy_client_simple_example.py
+from sqlalchemy import (
+    create_engine,
+    Column,
+    String,
+    Boolean,
+    DateTime,
+    text,
+    Integer,
+    Float,
+    DECIMAL,
+)
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Подключение к базе данных
@@ -9,9 +19,11 @@ database_name = "sqlfree-4"
 username = "netology"
 password = "NetoSQL2019"
 
-#формируем урл для подключения к базе
-connection_string = f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{database_name}"
-#обьект для подключения к базе данных
+# формируем урл для подключения к базе
+connection_string = (
+    f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{database_name}"
+)
+# обьект для подключения к базе данных
 engine = create_engine(connection_string)
 
 
@@ -24,7 +36,7 @@ def sdl_alchemy_SQL():
     """
 
     # Параметры запроса для подстановки в наш SQL запрос
-    #inn = "775313475294"
+    # inn = "775313475294"
     unit_id = 1
 
     # Выполняем запрос
@@ -34,7 +46,8 @@ def sdl_alchemy_SQL():
             print(row)
 
 
-#Modul_4\Cinescope\db_requester\sql_alchemy_client_simple_example.py
+# Modul_4\Cinescope\db_requester\sql_alchemy_client_simple_example.py
+
 
 def sdl_alchemy_ORM():
     # Базовый класс для моделей
@@ -42,8 +55,8 @@ def sdl_alchemy_ORM():
 
     # Модель таблицы users
     class Staff(Base):
-        __tablename__ = 'staff'
-        __table_args__ = {'schema': 'perkov_sa'}
+        __tablename__ = "staff"
+        __table_args__ = {"schema": "perkov_sa"}
         staff_id = Column(Integer, primary_key=True)
         last_name = Column(String)
         first_name = Column(String)
@@ -58,7 +71,7 @@ def sdl_alchemy_ORM():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    #inn = "775313475294"
+    # inn = "775313475294"
     unit_id = 1
 
     # Выполняем запрос
@@ -77,6 +90,7 @@ def sdl_alchemy_ORM():
             print(f"Address ID: {staff.address_id}")
             print(f"Created Date: {staff.created_date}")
             print(f"Deleted: {staff.deleted}")
+
 
 if __name__ == "__main__":
     sdl_alchemy_SQL()

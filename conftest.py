@@ -30,7 +30,7 @@ def film_data():
         "description": DataGenerator.generate_valid_film_description(),
         "location": random.choice(["MSK", "SPB"]),
         "published": random.choice([True, False]),
-        "genreId": random.choice([1, 2, 3, 4, 7, 8, 9, 10])
+        "genreId": random.choice([1, 2, 3, 4, 7, 8, 9, 10]),
     }
 
 
@@ -43,8 +43,9 @@ def test_user() -> TestUser:
         fullName=DataGenerator.generate_random_name(),
         password=random_password,
         passwordRepeat=random_password,
-        roles=[Roles.USER.value]
+        roles=[Roles.USER.value],
     )
+
 
 @pytest.fixture(scope="function")
 def registration_user_data() -> TestUser:
@@ -54,7 +55,7 @@ def registration_user_data() -> TestUser:
         fullName=DataGenerator.generate_random_name(),
         password=random_password,
         passwordRepeat=random_password,
-        roles=[Roles.USER.value]
+        roles=[Roles.USER.value],
     )
 
 
@@ -65,10 +66,7 @@ def creation_user_data(test_user):
     user_dict = test_user.model_dump()
 
     # Update with additional fields
-    user_dict.update({
-        "verified": True,
-        "banned": False
-    })
+    user_dict.update({"verified": True, "banned": False})
 
     # Return the dictionary (or create a new TestUser instance if needed)
     return user_dict
@@ -87,7 +85,7 @@ def registered_user(requester, test_user):
         base_url=AUTH_BASE_URL,
         endpoint=REGISTER_ENDPOINT,
         data=user_dict,  # Use dict instead of model
-        expected_status=201
+        expected_status=201,
     )
     response_data = response.json()
 
@@ -95,9 +93,8 @@ def registered_user(requester, test_user):
     return {
         "id": response_data["id"],
         "email": test_user.email,
-        "password": test_user.password
+        "password": test_user.password,
     }
-
 
 
 @pytest.fixture(scope="session")
@@ -115,15 +112,18 @@ def requester():
     response = session.post(
         auth_url,
         headers=HEADERS,
-        json={"email": "api1@gmail.com", "password": "asdqwe123Q"}
+        json={"email": "api1@gmail.com", "password": "asdqwe123Q"},
     )
-    assert response.status_code == 200, f"Ошибка авторизации: {response.status_code} - {response.text}"
+    assert (
+        response.status_code == 200
+    ), f"Ошибка авторизации: {response.status_code} - {response.text}"
     token = response.json().get("accessToken")
     assert token is not None, "В ответе не оказалось токена"
 
     # Обновляя хедеры создаем авторизованный CustomRequester
     session.headers.update({"Authorization": f"Bearer {token}"})
     return CustomRequester(session=session)
+
 
 @pytest.fixture(scope="session")
 def session():
@@ -134,12 +134,14 @@ def session():
     yield http_session
     http_session.close()
 
+
 @pytest.fixture(scope="session")
 def api_manager(session):
     """
     Фикстура для создания экземпляра ApiManager.
     """
     return ApiManager(session)
+
 
 @pytest.fixture
 def user_session():
@@ -156,6 +158,7 @@ def user_session():
     for user in user_pool:
         user.close_session()
 
+
 @pytest.fixture
 def super_admin(user_session):
     new_session = user_session()
@@ -164,42 +167,52 @@ def super_admin(user_session):
         SuperAdminCreds.USERNAME,
         SuperAdminCreds.PASSWORD,
         list(Roles.SUPER_ADMIN.value),
-        new_session)
+        new_session,
+    )
 
     super_admin.api.auth_api.authenticate(super_admin.creds)
     return super_admin
+
 
 @pytest.fixture
 def admin(user_session, super_admin, creation_user_data):
     new_session = user_session()
 
     admin = User(
-        creation_user_data['email'],  # Now works with dict
-        creation_user_data['password'],
+        creation_user_data["email"],  # Now works with dict
+        creation_user_data["password"],
         list(Roles.ADMIN.value),
-        new_session)
+        new_session,
+    )
 
     super_admin.api.user_api.create_user(creation_user_data)
     admin.api.auth_api.authenticate(admin.creds)
     return admin
+
 
 @pytest.fixture
 def common_user(user_session, super_admin, creation_user_data):
     new_session = user_session()
 
     common_user = User(
-        creation_user_data['email'],
-        creation_user_data['password'],
+        creation_user_data["email"],
+        creation_user_data["password"],
         list(Roles.USER.value),
-        new_session)
+        new_session,
+    )
 
     super_admin.api.user_api.create_user(creation_user_data)
     common_user.api.auth_api.authenticate(common_user.creds)
     return common_user
 
 
-engine = create_engine(f"postgresql+psycopg2://{DbCreds.USERNAME}:{DbCreds.PASSWORD}@{DbCreds.HOST}:{DbCreds.PORT}/{DbCreds.DATABASE_NAME}") # Создаем движок (engine) для подключения к базе данных
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) # Создаем фабрику сессий
+engine = create_engine(
+    f"postgresql+psycopg2://{DbCreds.USERNAME}:{DbCreds.PASSWORD}@{DbCreds.HOST}:{DbCreds.PORT}/{DbCreds.DATABASE_NAME}"
+)  # Создаем движок (engine) для подключения к базе данных
+SessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine
+)  # Создаем фабрику сессий
+
 
 @pytest.fixture(scope="module")
 def db_session():
@@ -211,23 +224,23 @@ def db_session():
 
     # Создаем тестовые данные
     test_user = UserDBModel(
-        id = "test_id",
-        email = DataGenerator.generate_random_email(),
-        full_name = DataGenerator.generate_random_name(),
-        password = DataGenerator.generate_random_password(),
-        created_at = datetime.datetime.now(),
-        updated_at = datetime.datetime.now(),
-        verified = False,
-        banned = False,
-        roles = "{USER}"
+        id="test_id",
+        email=DataGenerator.generate_random_email(),
+        full_name=DataGenerator.generate_random_name(),
+        password=DataGenerator.generate_random_password(),
+        created_at=datetime.datetime.now(),
+        updated_at=datetime.datetime.now(),
+        verified=False,
+        banned=False,
+        roles="{USER}",
     )
-    session.add(test_user) #добавляем объект в базу данных
-    session.commit() #сохраняем изменения для всех остальных подключений
+    session.add(test_user)  # добавляем объект в базу данных
+    session.commit()  # сохраняем изменения для всех остальных подключений
 
-    yield session # можете запустить тесты в дебаг режиме и поставить тут брекпойнт
-                  # зайдите в базу и убедитесь что новый объект был создан
+    yield session  # можете запустить тесты в дебаг режиме и поставить тут брекпойнт
+    # зайдите в базу и убедитесь что новый объект был создан
 
-		#код ниже выполнится после всех запущенных тестов
-    #session.delete(test_user) # Удаляем тестовые данные
-    session.commit() # сохраняем изменения для всех остальных подключений
-    session.close() #завершем сессию (отключаемся от базы данных)
+    # код ниже выполнится после всех запущенных тестов
+    # session.delete(test_user) # Удаляем тестовые данные
+    session.commit()  # сохраняем изменения для всех остальных подключений
+    session.close()  # завершем сессию (отключаемся от базы данных)

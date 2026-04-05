@@ -3,7 +3,7 @@ from custom_requester.custom_requester import CustomRequester
 
 
 class MoviesAPI(CustomRequester):
-    #MOVIE_BASE_URL = "https://api.dev-cinescope.coconutqa.ru/"
+    # MOVIE_BASE_URL = "https://api.dev-cinescope.coconutqa.ru/"
 
     def __init__(self, session):
         self.session = session
@@ -17,7 +17,7 @@ class MoviesAPI(CustomRequester):
             method="GET",
             base_url=MOVIES_BASE_URL,
             endpoint=f"/movies/{movie_id}",
-            expected_status=expected_status
+            expected_status=expected_status,
         )
 
     def create_movie(self, data, expected_status=201):
@@ -26,7 +26,7 @@ class MoviesAPI(CustomRequester):
             base_url=MOVIES_BASE_URL,
             endpoint="/movies",
             data=data,
-            expected_status=expected_status
+            expected_status=expected_status,
         )
 
     def delete_movie(self, movie_id, expected_status=200):
@@ -34,5 +34,5 @@ class MoviesAPI(CustomRequester):
             method="DELETE",
             base_url=MOVIES_BASE_URL,
             endpoint=f"/movies/{movie_id}",
-            expected_status=expected_status
+            expected_status=expected_status,
         )

@@ -10,8 +10,12 @@ def test_accounts_transaction_template(self, db_session: Session):
     # ====================================================================== Подготовка к тесту
     # Создаем новые записи в базе данных (чтоб точно быть уверенными что в базе присутствуют данные для тестирования)
 
-    stan = AccountTransactionTemplate(user=f"Stan_{DataGenerator.generate_random_int(10)}", balance=1000)
-    bob = AccountTransactionTemplate(user=f"Bob_{DataGenerator.generate_random_int(10)}", balance=500)
+    stan = AccountTransactionTemplate(
+        user=f"Stan_{DataGenerator.generate_random_int(10)}", balance=1000
+    )
+    bob = AccountTransactionTemplate(
+        user=f"Bob_{DataGenerator.generate_random_int(10)}", balance=500
+    )
 
     # Добавляем записи в сессию
     db_session.add_all([stan, bob])
@@ -30,8 +34,12 @@ def test_accounts_transaction_template(self, db_session: Session):
         :param amount: Сумма перевода.
         """
         # Получаем счета
-        from_account = session.query(AccountTransactionTemplate).filter_by(user=from_account).one()
-        to_account = session.query(AccountTransactionTemplate).filter_by(user=to_account).one()
+        from_account = (
+            session.query(AccountTransactionTemplate).filter_by(user=from_account).one()
+        )
+        to_account = (
+            session.query(AccountTransactionTemplate).filter_by(user=to_account).one()
+        )
 
         # Проверяем, что на счете достаточно средств
         if from_account.balance < amount:
@@ -51,7 +59,9 @@ def test_accounts_transaction_template(self, db_session: Session):
 
     try:
         # Выполняем перевод 200 единиц от stan к bob
-        transfer_money(db_session, from_account=stan.user, to_account=bob.user, amount=200)
+        transfer_money(
+            db_session, from_account=stan.user, to_account=bob.user, amount=200
+        )
 
         # Проверяем, что балансы изменились
         assert stan.balance == 800

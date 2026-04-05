@@ -4,8 +4,8 @@ from constants import LOGIN_ENDPOINT, REGISTER_ENDPOINT, AUTH_BASE_URL
 
 class AuthAPI(CustomRequester):
     """
-      Класс для работы с аутентификацией.
-      """
+    Класс для работы с аутентификацией.
+    """
 
     def __init__(self, session):
         super().__init__(session=session)
@@ -21,7 +21,7 @@ class AuthAPI(CustomRequester):
             base_url=AUTH_BASE_URL,
             endpoint=REGISTER_ENDPOINT,
             data=user_data,
-            expected_status=expected_status
+            expected_status=expected_status,
         )
 
     def login_user(self, login_data, expected_status=200):
@@ -35,21 +35,20 @@ class AuthAPI(CustomRequester):
             base_url=AUTH_BASE_URL,
             endpoint=LOGIN_ENDPOINT,
             data=login_data,
-            expected_status=expected_status
+            expected_status=expected_status,
         )
 
     def authenticate(self, user_creds):
         if len(user_creds) < 2:
             raise ValueError("user_creds должны содержать email и password")
 
-        login_data = {
-            "email": user_creds[0],
-            "password": user_creds[1]
-        }
+        login_data = {"email": user_creds[0], "password": user_creds[1]}
 
         response = self.login_user(login_data)
         if not response.ok:
-            raise Exception(f"Login не состоялся: {response.status_code} - {response.text}")
+            raise Exception(
+                f"Login не состоялся: {response.status_code} - {response.text}"
+            )
 
         data = response.json()
         token = data.get("accessToken")

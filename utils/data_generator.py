@@ -17,15 +17,15 @@ class DataGenerator:
 
     @staticmethod
     def generate_random_email():
-        random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+        random_string = "".join(
+            random.choices(string.ascii_lowercase + string.digits, k=8)
+        )
         random_char = faker.random_letter()
         return f"ke{random_char}{random_string}@gmail.com"
-
 
     @staticmethod
     def generate_random_name():
         return f"{faker.first_name()} {faker.last_name()}"
-
 
     @staticmethod
     def generate_random_password():
@@ -44,10 +44,10 @@ class DataGenerator:
         special_chars = "?@#$%^&*|:"
         all_chars = string.ascii_letters + string.digits + special_chars
         remaining_length = random.randint(6, 18)  # Остальная длина пароля
-        remaining_chars = ''.join(random.choices(all_chars, k=remaining_length))
+        remaining_chars = "".join(random.choices(all_chars, k=remaining_length))
 
         # Перемешиваем пароль для рандомизации
         password = list(letters + digits + remaining_chars)
         random.shuffle(password)
 
-        return ''.join(password)
+        return "".join(password)

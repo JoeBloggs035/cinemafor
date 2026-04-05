@@ -7,6 +7,7 @@ from utils.data_generator import DataGenerator
 
 logger = logging.getLogger(__name__)
 
+
 class User(BaseModel):
     email: str
     fullName: str
@@ -21,9 +22,9 @@ class User(BaseModel):
         """
         Проверяем, что email содержит @
         """
-        if '@' not in values['email']:
+        if "@" not in values["email"]:
             raise ValueError("!!!email должен содержать @!!!")
-        if len(values['password']) < 8:
+        if len(values["password"]) < 8:
             raise ValueError("password должен быть не меньше 8 символов")
         return values
 
@@ -40,6 +41,7 @@ def test_user_data(test_user):
     logger.info(user.model_dump_json(exclude_unset=True))
     logger.info(f"{user.email=} {user.fullName=} {user.roles=}")
 
+
 def test_creation_user_data(creation_user_data):
     user = User(**creation_user_data)
     assert isinstance(user.fullName, str)
@@ -49,6 +51,7 @@ def test_creation_user_data(creation_user_data):
     logger.info(user.model_dump_json())  # вместо user.json()
     logger.info(user.model_dump_json(exclude_unset=True))
     logger.info(f"{user.email=} {user.fullName=} {user.roles=}")
+
 
 def test_registration_user_data(registration_user_data):
     registration_user_dict = registration_user_data.model_dump()
