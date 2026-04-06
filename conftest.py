@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from faker import Faker
 import pytest
@@ -248,3 +249,9 @@ def db_session():
     session.delete(test_user) # Удаляем тестовые данные
     session.commit()  # сохраняем изменения для всех остальных подключений
     session.close()  # завершаем сессию (отключаемся от базы данных)
+
+
+@pytest.fixture  # была добавлена в файл conftest.py
+def delay_between_retries():
+    time.sleep(2)  # Задержка в 2 секунды\ это не обязательно но
+    yield  # нужно понимать что такая возможность имеется
