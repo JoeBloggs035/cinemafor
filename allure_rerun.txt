@@ -1,0 +1,14 @@
+pip install pytest allure-pytest
+pip install pytest allure-pytest allure-python-commons
+
+pytest tests/api/test_other_api.py --alluredir=./allure-results
+
+wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure_2.29.0-1_all.deb
+sudo dpkg -i allure_2.29.0-1_all.deb
+
+allure serve ./allure-results
+
+pip install pytest-check
+
+pip install pytest-rerunfailures
+
